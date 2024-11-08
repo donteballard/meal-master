@@ -1,24 +1,50 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Navbar from './components/Navbar';
+import Home from './components/Home';
+import MealPlan from './components/MealPlanner/MealPlan';
+import QuickStats from './components/MealPlanner/QuickStats';
+import WeeklyOverview from './components/MealPlanner/WeeklyOverview';
+import CalorieTracking from './components/MealPlanner/CalorieTracking';
+import { MealProvider } from './context/MealContext';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <MealProvider>
+        <div className="min-h-screen bg-background text-text">
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/meal-plans" element={
+              <div className="p-4 sm:p-6">
+                <div className="max-w-7xl mx-auto space-y-6">
+                  {/* Quick Stats Section */}
+                  <div>
+                    <QuickStats day="Monday" />
+                  </div>
+
+                  {/* Meal Plan Section */}
+                  <div className="flex justify-center">
+                    <div className="bg-background-light rounded-lg p-6 w-full max-w-4xl">
+                      <MealPlan />
+                    </div>
+                  </div>
+
+                  {/* Analytics Section */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-6">
+                    <div className="h-fit -mb-3 lg:mb-0">
+                      <WeeklyOverview />
+                    </div>
+                    <CalorieTracking />
+                  </div>
+                </div>
+              </div>
+            } />
+          </Routes>
+        </div>
+      </MealProvider>
+    </Router>
   );
 }
 
