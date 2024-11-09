@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, useState } from 'react';
 import { RECIPES } from '../data/recipes';
+import { generateMealPlan } from '../utils/mealPlanGenerator';
 
 const MealContext = createContext();
 
@@ -108,6 +109,7 @@ function mealReducer(state, action) {
 
 export function MealProvider({ children }) {
   const [state, dispatch] = useReducer(mealReducer, initialState);
+  const [surveyData, setSurveyData] = useState(null);
 
   // Generate default meal plan with variety
   const generateDefaultMealPlan = () => {
@@ -126,6 +128,13 @@ export function MealProvider({ children }) {
     });
 
     dispatch({ type: SET_MEALS, payload: defaultPlan });
+  };
+
+  // Generate personalized meal plan based on survey data
+  const generatePersonalizedMealPlan = (newSurveyData) => {
+    setSurveyData(newSurveyData);
+    const personalizedPlan = generateMealPlan(newSurveyData);
+    dispatch({ type: SET_MEALS, payload: personalizedPlan });
   };
 
   // Load meals from localStorage on mount
@@ -179,6 +188,8 @@ export function MealProvider({ children }) {
       getDayMeals,
       getDayTotals,
       generateDefaultMealPlan,
+      generatePersonalizedMealPlan,
+      surveyData
     }}>
       {children}
     </MealContext.Provider>

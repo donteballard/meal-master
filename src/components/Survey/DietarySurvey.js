@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { convertHeightToMetric, convertWeightToMetric } from '../../utils/conversions';
 import AddOptionButton from './AddOptionButton';
+import { processSurveyData } from '../../utils/surveyProcessor';
 
 const ACTIVITY_LEVELS = {
   SEDENTARY: 'Sedentary (little or no exercise)',
@@ -58,39 +58,74 @@ const COMMON_DISLIKES = [
   'Brussels Sprouts', 'Eggplant'
 ];
 
-function DietarySurvey({ onComplete }) {
+function DietarySurvey({ onComplete, initialData, isEditing = false }) {
   const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState({
-    // Basic Info
-    age: '',
-    gender: '',
-    heightFeet: '',
-    heightInches: '',
-    weightLbs: '',
-    activityLevel: '',
+  const formTitle = isEditing ? "Update Your Preferences" : "Personalize Your Meal Plan";
+  
+  const [formData, setFormData] = useState(() => {
+    if (initialData) {
+      console.log('Initial Data:', initialData); // For debugging
+      return {
+        // Basic Info
+        age: initialData.age || '',
+        gender: initialData.gender || '',
+        heightFeet: initialData.heightFeet || '',
+        heightInches: initialData.heightInches || '',
+        weightLbs: initialData.weightLbs || '',
+        activityLevel: initialData.activityLevel || '',
+        
+        // Goals
+        primaryGoal: initialData.primaryGoal || [],
+        targetWeightLbs: initialData.targetWeightLbs || '',
+        weeklyGoal: initialData.weeklyGoal || '',
+        
+        // Dietary Preferences
+        dietaryRestrictions: initialData.dietaryRestrictions || [],
+        allergies: initialData.allergies || [],
+        dislikedIngredients: initialData.dislikedIngredients || [],
+        
+        // Meal Preferences
+        mealsPerDay: initialData.mealsPerDay || '3',
+        cookingTime: initialData.cookingTime || '30',
+        preferredCuisines: initialData.preferredCuisines || [],
+        cookingSkill: initialData.cookingSkill || 'intermediate',
+        weeklyBudget: initialData.weeklyBudget || '',
+        
+        // Add attempted flag
+        attempted: initialData.attempted || false
+      };
+    }
     
-    // Goals
-    primaryGoal: [],
-    targetWeight: '',
-    weeklyGoal: '',
-    
-    // Dietary Preferences
-    dietaryRestrictions: [],
-    allergies: [],
-    dislikedIngredients: [],
-    
-    // Meal Preferences
-    mealsPerDay: '3',
-    snacksPerDay: '2',
-    cookingTime: '30',
-    mealPrepPreference: 'weekly',
-    
-    // Budget
-    weeklyBudget: '',
-    
-    // Additional Preferences
-    preferredCuisines: [],
-    cookingSkill: 'intermediate'
+    // Default initial state for new survey
+    return {
+      // Basic Info
+      age: '',
+      gender: '',
+      heightFeet: '',
+      heightInches: '',
+      weightLbs: '',
+      activityLevel: '',
+      
+      // Goals
+      primaryGoal: [],
+      targetWeightLbs: '',
+      weeklyGoal: '',
+      
+      // Dietary Preferences
+      dietaryRestrictions: [],
+      allergies: [],
+      dislikedIngredients: [],
+      
+      // Meal Preferences
+      mealsPerDay: '3',
+      cookingTime: '30',
+      preferredCuisines: [],
+      cookingSkill: 'intermediate',
+      weeklyBudget: '',
+      
+      // Add attempted flag
+      attempted: false
+    };
   });
 
   const normalizeValue = (value) => value.trim().toLowerCase();
@@ -656,12 +691,17 @@ function DietarySurvey({ onComplete }) {
     </div>
   );
 
+  const handleSurveyComplete = (formData) => {
+    const processedData = processSurveyData(formData);
+    onComplete(processedData);
+  };
+
   return (
     <div className="max-w-3xl mx-auto p-6">
       <div className="bg-background-light rounded-lg p-6">
         <div className="mb-8">
           <div className="flex justify-between items-center mb-4">
-            <h1 className="text-2xl font-bold text-primary">Personalize Your Meal Plan</h1>
+            <h1 className="text-2xl font-bold text-primary">{formTitle}</h1>
             <span className="text-text-muted">Step {step} of 4</span>
           </div>
           <div className="w-full bg-background rounded-full h-2">
@@ -687,12 +727,7 @@ function DietarySurvey({ onComplete }) {
           if (step < 4) {
             setStep(step + 1);
           } else {
-            const finalData = {
-              ...formData,
-              height: convertHeightToMetric(parseInt(formData.heightFeet), parseInt(formData.heightInches)),
-              weight: convertWeightToMetric(parseInt(formData.weightLbs)),
-            };
-            onComplete(finalData);
+            handleSurveyComplete(formData);
           }
         }}>
           <motion.div
