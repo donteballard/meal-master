@@ -11,7 +11,13 @@ export const RECIPES = {
       dietaryTags: ['vegetarian', 'high-protein'],
       goals: ['muscle-gain', 'weight-loss'],
       prepTime: '5 mins',
-      prepSteps: 'Boil the oats in water for 5 minutes. Add the whey protein, banana, almond milk, and peanut butter. Stir and serve.'
+      prepSteps: [
+        'Boil the oats in water for 5 minutes',
+        'Add the whey protein and stir until well combined',
+        'Slice the banana and add it to the bowl',
+        'Pour in the almond milk',
+        'Top with peanut butter and serve'
+      ]
     },
     {
       id: 'b2',
@@ -24,7 +30,13 @@ export const RECIPES = {
       dietaryTags: ['vegetarian', 'low-fat'],
       goals: ['weight-loss', 'maintenance'],
       prepTime: '5 mins',
-      prepSteps: 'Mix the greek yogurt, mixed berries, granola, and honey. Serve and enjoy.'
+      prepSteps: [
+        'Add a layer of greek yogurt to your serving bowl',
+        'Add a layer of mixed berries',
+        'Sprinkle a layer of granola',
+        'Repeat layers until ingredients are used up',
+        'Drizzle with honey and serve'
+      ]
     },
     {
       id: 'b3',
@@ -37,7 +49,11 @@ export const RECIPES = {
       dietaryTags: ['vegetarian'],
       goals: ['muscle-gain', 'maintenance'],
       prepTime: '10 mins',
-      prepSteps: 'Toast the whole grain bread. Add the avocado, eggs, and cherry tomatoes. Serve and enjoy.'
+      prepSteps: [
+        'Toast the whole grain bread',
+        'Add the avocado, eggs, and cherry tomatoes',
+        'Serve and enjoy'
+      ]
     }
   ],
   lunch: [
@@ -52,7 +68,11 @@ export const RECIPES = {
       dietaryTags: ['high-protein', 'gluten-free'],
       goals: ['muscle-gain', 'weight-loss'],
       prepTime: '25 mins',
-      prepSteps: 'Cook the quinoa in water for 15 minutes. Add the chicken breast, mixed vegetables, and olive oil. Stir and serve.'
+      prepSteps: [
+        'Cook the quinoa in water for 15 minutes',
+        'Add the chicken breast, mixed vegetables, and olive oil',
+        'Stir and serve'
+      ]
     },
     {
       id: 'l2',
@@ -65,7 +85,10 @@ export const RECIPES = {
       dietaryTags: ['high-protein'],
       goals: ['weight-loss', 'maintenance'],
       prepTime: '10 mins',
-      prepSteps: 'Mix the tuna, whole wheat wrap, lettuce, mayo, and tomato. Serve and enjoy.'
+      prepSteps: [
+        'Mix the tuna, whole wheat wrap, lettuce, mayo, and tomato',
+        'Serve and enjoy'
+      ]
     },
     {
       id: 'l3',
@@ -78,7 +101,11 @@ export const RECIPES = {
       dietaryTags: ['vegan', 'gluten-free'],
       goals: ['weight-loss', 'maintenance'],
       prepTime: '30 mins',
-      prepSteps: 'Cook the sweet potato in the oven for 20 minutes. Add the chickpeas, kale, and tahini dressing. Stir and serve.'
+      prepSteps: [
+        'Cook the sweet potato in the oven for 20 minutes',
+        'Add the chickpeas, kale, and tahini dressing',
+        'Stir and serve'
+      ]
     }
   ],
   dinner: [
@@ -93,7 +120,11 @@ export const RECIPES = {
       dietaryTags: ['high-protein', 'gluten-free'],
       goals: ['muscle-gain', 'maintenance'],
       prepTime: '25 mins',
-      prepSteps: 'Cook the sweet potato in the oven for 20 minutes. Add the salmon fillet, broccoli, and olive oil. Stir and serve.'
+      prepSteps: [
+        'Cook the sweet potato in the oven for 20 minutes',
+        'Add the salmon fillet, broccoli, and olive oil',
+        'Stir and serve'
+      ]
     },
     {
       id: 'd2',
@@ -106,7 +137,11 @@ export const RECIPES = {
       dietaryTags: ['low-carb', 'high-protein'],
       goals: ['weight-loss', 'muscle-gain'],
       prepTime: '30 mins',
-      prepSteps: 'Cook the ground turkey in the oven for 20 minutes. Add the zucchini, marinara sauce, and parmesan. Stir and serve.'
+      prepSteps: [
+        'Cook the ground turkey in the oven for 20 minutes',
+        'Add the zucchini, marinara sauce, and parmesan',
+        'Stir and serve'
+      ]
     },
     {
       id: 'd3',
@@ -119,7 +154,11 @@ export const RECIPES = {
       dietaryTags: ['vegan', 'vegetarian'],
       goals: ['weight-loss', 'maintenance'],
       prepTime: '20 mins',
-      prepSteps: 'Cook the brown rice in water for 15 minutes. Add the tofu, mixed vegetables, and soy sauce. Stir and serve.'
+      prepSteps: [
+        'Cook the brown rice in water for 15 minutes',
+        'Add the tofu, mixed vegetables, and soy sauce',
+        'Stir and serve'
+      ]
     }
   ],
   snacks: [
@@ -134,7 +173,10 @@ export const RECIPES = {
       dietaryTags: ['vegetarian', 'high-protein'],
       goals: ['muscle-gain', 'post-workout'],
       prepTime: '5 mins',
-      prepSteps: 'Blend the whey protein, banana, almond milk, and spinach. Serve and enjoy.'
+      prepSteps: [
+        'Blend the whey protein, banana, almond milk, and spinach',
+        'Serve and enjoy'
+      ]
     },
     {
       id: 's2',
@@ -147,7 +189,10 @@ export const RECIPES = {
       dietaryTags: ['vegan', 'gluten-free'],
       goals: ['maintenance', 'energy'],
       prepTime: '0 mins',
-      prepSteps: 'Mix the almonds, walnuts, dried cranberries, and dark chocolate chips. Serve and enjoy.'
+      prepSteps: [
+        'Mix the almonds, walnuts, dried cranberries, and dark chocolate chips',
+        'Serve and enjoy'
+      ]
     },
     {
       id: 's3',
@@ -160,7 +205,11 @@ export const RECIPES = {
       dietaryTags: ['gluten-free', 'vegetarian'],
       goals: ['pre-workout', 'weight-loss'],
       prepTime: '2 mins',
-      prepSteps: 'Spread the peanut butter on the rice cakes. Add the banana slices. Serve and enjoy.'
+      prepSteps: [
+        'Spread the peanut butter on the rice cakes',
+        'Add the banana slices',
+        'Serve and enjoy'
+      ]
     }
   ]
 };

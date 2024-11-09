@@ -1,35 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { generateMockMealData } from '../../utils/mealGenerator';
 
 function AddMealModal({ isOpen, onClose, selectedDay, selectedMealType, onSubmit }) {
-  const [mealData, setMealData] = useState({
-    name: '',
-    calories: '',
-    protein: '',
-    carbs: '',
-    fat: '',
-    mealType: selectedMealType
-  });
+  const [mealName, setMealName] = useState('');
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = 'unset';
+      };
+    }
+  }, [isOpen]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(mealData);
-    setMealData({
-      name: '',
-      calories: '',
-      protein: '',
-      carbs: '',
-      fat: '',
-      mealType: selectedMealType
-    });
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setMealData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    
+    // Generate mock data based on the meal name and type
+    const generatedMealData = generateMockMealData(mealName, selectedMealType);
+    
+    onSubmit(generatedMealData);
+    setMealName('');
   };
 
   return (
@@ -41,6 +33,11 @@ function AddMealModal({ isOpen, onClose, selectedDay, selectedMealType, onSubmit
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
           className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              onClose();
+            }
+          }}
         >
           <motion.div
             initial={{ y: -50, opacity: 0 }}
@@ -48,9 +45,10 @@ function AddMealModal({ isOpen, onClose, selectedDay, selectedMealType, onSubmit
             exit={{ y: 50, opacity: 0 }}
             transition={{ duration: 0.2 }}
             className="bg-background-light rounded-lg p-6 max-w-md w-full"
+            onClick={e => e.stopPropagation()}
           >
             <h2 className="text-xl font-bold text-primary mb-4">
-              Add Meal for {selectedDay}
+              Add Custom Meal for {selectedDay}
             </h2>
             
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -58,68 +56,17 @@ function AddMealModal({ isOpen, onClose, selectedDay, selectedMealType, onSubmit
                 <label className="block text-text-muted mb-1">Meal Name</label>
                 <input 
                   type="text"
-                  name="name"
-                  value={mealData.name}
-                  onChange={handleChange}
+                  value={mealName}
+                  onChange={(e) => setMealName(e.target.value)}
                   className="w-full p-2 rounded-md bg-background border border-gray-700 text-text"
                   placeholder="Enter meal name"
                   required
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-text-muted mb-1">Calories</label>
-                  <input 
-                    type="number"
-                    name="calories"
-                    value={mealData.calories}
-                    onChange={handleChange}
-                    className="w-full p-2 rounded-md bg-background border border-gray-700 text-text"
-                    placeholder="kcal"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-text-muted mb-1">Protein</label>
-                  <input 
-                    type="number"
-                    name="protein"
-                    value={mealData.protein}
-                    onChange={handleChange}
-                    className="w-full p-2 rounded-md bg-background border border-gray-700 text-text"
-                    placeholder="grams"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-text-muted mb-1">Carbs</label>
-                  <input 
-                    type="number"
-                    name="carbs"
-                    value={mealData.carbs}
-                    onChange={handleChange}
-                    className="w-full p-2 rounded-md bg-background border border-gray-700 text-text"
-                    placeholder="grams"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-text-muted mb-1">Fat</label>
-                  <input 
-                    type="number"
-                    name="fat"
-                    value={mealData.fat}
-                    onChange={handleChange}
-                    className="w-full p-2 rounded-md bg-background border border-gray-700 text-text"
-                    placeholder="grams"
-                    required
-                  />
-                </div>
-              </div>
+              <p className="text-sm text-text-muted italic">
+                Nutritional information and recipe details will be automatically generated.
+              </p>
 
               <div className="flex justify-end space-x-3 mt-6">
                 <button 
