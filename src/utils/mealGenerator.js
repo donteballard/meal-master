@@ -50,8 +50,7 @@ const INGREDIENTS_INFO = {
   'greek yogurt': { tags: ['vegetarian', 'gluten-free', 'high-protein'] },
   'chickpeas': { tags: ['vegan', 'gluten-free', 'high-protein'] },
   'lentils': { tags: ['vegan', 'gluten-free', 'high-protein'] },
-  'almonds': { tags: ['vegan', 'gluten-free'] },
-  'quinoa': { tags: ['vegan', 'gluten-free'] }
+  'almonds': { tags: ['vegan', 'gluten-free'] }
 };
 
 const getRandomNumber = (min, max) => {
