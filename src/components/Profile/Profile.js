@@ -143,6 +143,7 @@ function Profile() {
 // Helper component to display preference sections
 function PreferenceSection() {
   const surveyData = JSON.parse(localStorage.getItem('surveyData'));
+  const { convertHeightFromMetric, convertWeightFromMetric } = require('../../utils/conversions');
 
   if (!surveyData) {
     return (
@@ -152,12 +153,18 @@ function PreferenceSection() {
     );
   }
 
+  // Convert height and weight to imperial
+  const height = convertHeightFromMetric(surveyData.personalInfo.height);
+  const weightLbs = Math.round(convertWeightFromMetric(surveyData.personalInfo.weight));
+
   const sections = [
     {
       title: 'Basic Information',
       items: [
         { label: 'Age', value: surveyData.personalInfo.age },
         { label: 'Gender', value: surveyData.personalInfo.gender },
+        { label: 'Height', value: `${height.feet}'${height.inches}"` },
+        { label: 'Weight', value: `${weightLbs} lbs` },
         { label: 'Activity Level', value: surveyData.personalInfo.activityLevel.toLowerCase().replace(/_/g, ' ') }
       ]
     },
@@ -165,7 +172,16 @@ function PreferenceSection() {
       title: 'Goals',
       items: [
         { label: 'Primary Goals', value: surveyData.goals.primary.join(', ').toLowerCase().replace(/_/g, ' ') },
-        { label: 'Weekly Goal', value: surveyData.goals.weeklyGoal ? `${surveyData.goals.weeklyGoal} lbs per week` : 'N/A' }
+        { 
+          label: 'Target Weight', 
+          value: surveyData.goals.targetWeight 
+            ? `${Math.round(convertWeightFromMetric(surveyData.goals.targetWeight))} lbs` 
+            : 'N/A' 
+        },
+        { 
+          label: 'Weekly Goal', 
+          value: surveyData.goals.weeklyGoal ? `${surveyData.goals.weeklyGoal} lbs per week` : 'N/A' 
+        }
       ]
     },
     {

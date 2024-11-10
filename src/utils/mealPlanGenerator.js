@@ -1,5 +1,4 @@
 import { RECIPES } from '../data/recipes';
-import { generateMockMealData } from './mealGenerator';
 
 // Helper function to check if a recipe meets dietary restrictions
 const meetsRestrictions = (recipe, restrictions) => {
@@ -58,7 +57,10 @@ const meetsTimeConstraint = (recipe, maxTime) => {
 
 // Helper function to get recipes for a specific meal type that meet all criteria
 const getValidRecipes = (mealType, surveyData, preferences) => {
-  const allRecipes = RECIPES[mealType.toLowerCase()] || [];
+  // Convert meal type to match RECIPES object keys
+  const recipeType = mealType.toLowerCase();
+  const recipesKey = recipeType === 'snack' ? 'snacks' : recipeType; // Handle 'snacks' vs 'snack'
+  const allRecipes = RECIPES[recipesKey] || [];
   
   return allRecipes.filter(recipe => 
     meetsRestrictions(recipe, preferences.dietaryRestrictions) &&
@@ -71,7 +73,7 @@ const getValidRecipes = (mealType, surveyData, preferences) => {
 // Main function to generate a meal plan
 export const generateMealPlan = (surveyData) => {
   const { nutritionTargets, preferences } = surveyData;
-  const mealsPerDay = nutritionTargets.mealsPerDay;
+  const mealsPerDay = parseInt(nutritionTargets.mealsPerDay);
   const mealCalories = nutritionTargets.mealCalories;
 
   // Define meal types based on number of meals per day
@@ -97,14 +99,18 @@ export const generateMealPlan = (surveyData) => {
     mealPlan[day] = {};
     mealTypes.forEach((type, index) => {
       const validRecipes = getValidRecipes(type, surveyData, preferences);
+      console.log(`${day} ${type}: Found ${validRecipes.length} valid recipes`); // Debug log
       
       if (validRecipes.length === 0) {
-        // If no valid recipes found, generate a custom meal
-        const customMeal = generateMockMealData(
-          `Custom ${type.charAt(0).toUpperCase() + type.slice(1)}`,
-          type.toUpperCase()
-        );
-        mealPlan[day][type] = [{ ...customMeal, id: Date.now() + Math.random() }];
+        // If no valid recipes found, use a random recipe from that meal type
+        const recipesKey = type === 'snack' ? 'snacks' : type;
+        const allRecipes = RECIPES[recipesKey] || [];
+        const randomRecipe = allRecipes[Math.floor(Math.random() * allRecipes.length)];
+        mealPlan[day][type] = [{
+          ...randomRecipe,
+          id: Date.now() + Math.random(),
+          mealType: type
+        }];
       } else {
         // Select a recipe that best matches the calorie target for this meal
         const targetCalories = mealCalories[index];

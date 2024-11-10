@@ -54,6 +54,99 @@ export const RECIPES = {
         'Add the avocado, eggs, and cherry tomatoes',
         'Serve and enjoy'
       ]
+    },
+    {
+      id: 'b4',
+      name: 'Tofu Scramble',
+      calories: 320,
+      protein: 22,
+      carbs: 25,
+      fat: 18,
+      ingredients: ['firm tofu', 'nutritional yeast', 'turmeric', 'spinach', 'mushrooms', 'onions', 'bell peppers'],
+      dietaryTags: ['vegan', 'gluten-free', 'high-protein'],
+      goals: ['weight-loss', 'muscle-gain', 'maintenance'],
+      prepTime: '20 mins',
+      prepSteps: [
+        'Crumble tofu into a bowl',
+        'Heat pan and sauté onions, mushrooms, and peppers',
+        'Add tofu and seasonings',
+        'Add spinach and cook until wilted',
+        'Serve hot'
+      ]
+    },
+    {
+      id: 'b5',
+      name: 'Keto Breakfast Bowl',
+      calories: 450,
+      protein: 28,
+      carbs: 8,
+      fat: 35,
+      ingredients: ['eggs', 'avocado', 'bacon', 'cherry tomatoes', 'spinach', 'cheese'],
+      dietaryTags: ['keto', 'gluten-free', 'low-carb'],
+      goals: ['weight-loss', 'maintenance'],
+      prepTime: '15 mins',
+      prepSteps: [
+        'Cook bacon until crispy',
+        'Scramble eggs in the same pan',
+        'Slice avocado and tomatoes',
+        'Arrange all ingredients in a bowl',
+        'Top with cheese and serve'
+      ]
+    },
+    {
+      id: 'b6',
+      name: 'Overnight Chia Pudding',
+      calories: 280,
+      protein: 12,
+      carbs: 32,
+      fat: 14,
+      ingredients: ['chia seeds', 'almond milk', 'maple syrup', 'vanilla extract', 'mixed berries', 'almonds'],
+      dietaryTags: ['vegan', 'gluten-free', 'dairy-free'],
+      goals: ['weight-loss', 'maintenance'],
+      prepTime: '5 mins + overnight',
+      prepSteps: [
+        'Mix chia seeds with almond milk, maple syrup, and vanilla',
+        'Refrigerate overnight',
+        'Top with berries and almonds before serving'
+      ]
+    },
+    {
+      id: 'b7',
+      name: 'High-Protein Pancakes',
+      calories: 400,
+      protein: 35,
+      carbs: 42,
+      fat: 12,
+      ingredients: ['protein powder', 'oat flour', 'egg whites', 'banana', 'baking powder', 'cinnamon'],
+      dietaryTags: ['high-protein', 'vegetarian'],
+      goals: ['muscle-gain', 'post-workout'],
+      prepTime: '15 mins',
+      prepSteps: [
+        'Mix all ingredients until smooth',
+        'Heat non-stick pan over medium heat',
+        'Pour batter to form pancakes',
+        'Cook until bubbles form, then flip',
+        'Serve with desired toppings'
+      ]
+    },
+    {
+      id: 'b8',
+      name: 'Mediterranean Breakfast Plate',
+      calories: 380,
+      protein: 18,
+      carbs: 35,
+      fat: 22,
+      ingredients: ['hummus', 'whole grain pita', 'cucumber', 'tomatoes', 'olives', 'feta cheese', 'za\'atar'],
+      dietaryTags: ['vegetarian', 'mediterranean'],
+      goals: ['maintenance', 'heart-health'],
+      prepTime: '10 mins',
+      prepSteps: [
+        'Toast pita bread',
+        'Slice vegetables',
+        'Arrange all ingredients on a plate',
+        'Sprinkle with za\'atar',
+        'Serve immediately'
+      ]
     }
   ],
   lunch: [
@@ -105,6 +198,118 @@ export const RECIPES = {
         'Cook the sweet potato in the oven for 20 minutes',
         'Add the chickpeas, kale, and tahini dressing',
         'Stir and serve'
+      ]
+    },
+    {
+      id: 'l4',
+      name: 'Mediterranean Chickpea Salad',
+      calories: 380,
+      protein: 15,
+      carbs: 45,
+      fat: 18,
+      ingredients: ['chickpeas', 'cucumber', 'tomatoes', 'red onion', 'feta cheese', 'olive oil', 'lemon juice', 'herbs'],
+      dietaryTags: ['vegetarian', 'mediterranean', 'gluten-free'],
+      goals: ['weight-loss', 'heart-health'],
+      prepTime: '15 mins',
+      prepSteps: [
+        'Drain and rinse chickpeas',
+        'Chop cucumber, tomatoes, and red onion',
+        'Combine all ingredients in a bowl',
+        'Drizzle with olive oil and lemon juice',
+        'Season with herbs and serve'
+      ]
+    },
+    {
+      id: 'l5',
+      name: 'Asian Tofu Stir-Fry Bowl',
+      calories: 420,
+      protein: 25,
+      carbs: 48,
+      fat: 16,
+      ingredients: ['firm tofu', 'brown rice', 'broccoli', 'carrots', 'snap peas', 'soy sauce', 'ginger', 'garlic'],
+      dietaryTags: ['vegan', 'dairy-free'],
+      goals: ['muscle-gain', 'weight-loss'],
+      prepTime: '25 mins',
+      prepSteps: [
+        'Press and cube tofu',
+        'Cook brown rice according to package instructions',
+        'Stir-fry vegetables with ginger and garlic',
+        'Add tofu and soy sauce',
+        'Serve over rice'
+      ]
+    },
+    {
+      id: 'l6',
+      name: 'Keto Turkey Club Lettuce Wraps',
+      calories: 350,
+      protein: 28,
+      carbs: 6,
+      fat: 24,
+      ingredients: ['turkey breast', 'bacon', 'lettuce leaves', 'avocado', 'tomato', 'mayo'],
+      dietaryTags: ['keto', 'low-carb', 'gluten-free'],
+      goals: ['weight-loss', 'maintenance'],
+      prepTime: '15 mins',
+      prepSteps: [
+        'Cook bacon until crispy',
+        'Wash and dry lettuce leaves',
+        'Layer turkey, bacon, and toppings',
+        'Add mayo and serve'
+      ]
+    },
+    {
+      id: 'l7',
+      name: 'Quinoa Buddha Bowl with Tahini Dressing',
+      calories: 450,
+      protein: 20,
+      carbs: 52,
+      fat: 18,
+      ingredients: [
+        'quinoa',
+        'roasted chickpeas',
+        'sweet potato',
+        'kale',
+        'avocado',
+        'tahini',
+        'lemon juice',
+        'garlic'
+      ],
+      dietaryTags: ['vegan', 'gluten-free', 'mediterranean'],
+      goals: ['weight-loss', 'heart-health'],
+      prepTime: '35 mins',
+      prepSteps: [
+        'Cook quinoa according to package instructions',
+        'Roast chickpeas and sweet potato cubes with spices',
+        'Massage kale with olive oil and lemon juice',
+        'Make tahini dressing by combining tahini, lemon juice, and garlic',
+        'Assemble bowl and top with sliced avocado and dressing'
+      ]
+    },
+    {
+      id: 'l8',
+      name: 'Spicy Chicken Fajita Bowl',
+      calories: 520,
+      protein: 45,
+      carbs: 38,
+      fat: 22,
+      ingredients: [
+        'chicken breast',
+        'bell peppers',
+        'onions',
+        'cauliflower rice',
+        'avocado',
+        'lime',
+        'cilantro',
+        'Mexican spices'
+      ],
+      dietaryTags: ['high-protein', 'gluten-free', 'low-carb'],
+      goals: ['muscle-gain', 'weight-loss'],
+      prepTime: '25 mins',
+      prepSteps: [
+        'Season chicken breast with Mexican spices',
+        'Sauté bell peppers and onions until soft',
+        'Cook chicken until done',
+        'Prepare cauliflower rice',
+        'Assemble bowl and top with avocado, lime, and cilantro'
       ]
     }
   ],
@@ -159,6 +364,119 @@ export const RECIPES = {
         'Add the tofu, mixed vegetables, and soy sauce',
         'Stir and serve'
       ]
+    },
+    {
+      id: 'd4',
+      name: 'Mexican Cauliflower Rice Bowl',
+      calories: 420,
+      protein: 32,
+      carbs: 15,
+      fat: 28,
+      ingredients: ['ground beef', 'cauliflower rice', 'bell peppers', 'onions', 'tomatoes', 'avocado', 'Mexican spices'],
+      dietaryTags: ['keto', 'low-carb', 'gluten-free'],
+      goals: ['weight-loss', 'maintenance'],
+      prepTime: '30 mins',
+      prepSteps: [
+        'Rice the cauliflower in a food processor',
+        'Brown the ground beef with spices',
+        'Sauté vegetables',
+        'Combine all ingredients',
+        'Top with avocado and serve'
+      ]
+    },
+    {
+      id: 'd5',
+      name: 'High-Protein Quinoa Power Bowl',
+      calories: 550,
+      protein: 40,
+      carbs: 55,
+      fat: 22,
+      ingredients: ['quinoa', 'chicken breast', 'black beans', 'sweet potato', 'kale', 'tahini dressing'],
+      dietaryTags: ['gluten-free', 'high-protein'],
+      goals: ['muscle-gain', 'performance'],
+      prepTime: '35 mins',
+      prepSteps: [
+        'Cook quinoa according to package instructions',
+        'Roast sweet potato cubes',
+        'Grill chicken breast',
+        'Sauté kale',
+        'Assemble bowl and drizzle with tahini dressing'
+      ]
+    },
+    {
+      id: 'd6',
+      name: 'Vegan Lentil Shepherd\'s Pie',
+      calories: 380,
+      protein: 18,
+      carbs: 58,
+      fat: 12,
+      ingredients: ['lentils', 'cauliflower mash', 'carrots', 'peas', 'mushrooms', 'onions', 'vegetable broth'],
+      dietaryTags: ['vegan', 'gluten-free'],
+      goals: ['weight-loss', 'heart-health'],
+      prepTime: '45 mins',
+      prepSteps: [
+        'Cook lentils in vegetable broth',
+        'Steam and mash cauliflower',
+        'Sauté vegetables',
+        'Layer lentil mixture and cauliflower mash',
+        'Bake until golden'
+      ]
+    },
+    {
+      id: 'd7',
+      name: 'Grilled Salmon with Roasted Vegetables',
+      calories: 480,
+      protein: 42,
+      carbs: 25,
+      fat: 24,
+      ingredients: [
+        'salmon fillet',
+        'asparagus',
+        'cherry tomatoes',
+        'garlic',
+        'lemon',
+        'olive oil',
+        'herbs',
+        'quinoa'
+      ],
+      dietaryTags: ['gluten-free', 'high-protein', 'mediterranean'],
+      goals: ['muscle-gain', 'heart-health'],
+      prepTime: '30 mins',
+      prepSteps: [
+        'Preheat grill or oven',
+        'Season salmon with herbs, garlic, and lemon',
+        'Toss vegetables with olive oil and seasonings',
+        'Cook quinoa according to package instructions',
+        'Grill salmon and roast vegetables until done'
+      ]
+    },
+    {
+      id: 'd8',
+      name: 'Vegetarian Chickpea Curry',
+      calories: 380,
+      protein: 18,
+      carbs: 45,
+      fat: 16,
+      ingredients: [
+        'chickpeas',
+        'coconut milk',
+        'spinach',
+        'tomatoes',
+        'onion',
+        'garlic',
+        'curry spices',
+        'brown rice'
+      ],
+      dietaryTags: ['vegan', 'gluten-free', 'vegetarian'],
+      goals: ['weight-loss', 'heart-health'],
+      prepTime: '35 mins',
+      prepSteps: [
+        'Cook brown rice according to package instructions',
+        'Sauté onions and garlic until soft',
+        'Add spices and toast until fragrant',
+        'Add chickpeas, coconut milk, and tomatoes',
+        'Simmer until thickened and add spinach at the end'
+      ]
     }
   ],
   snacks: [
@@ -209,6 +527,108 @@ export const RECIPES = {
         'Spread the peanut butter on the rice cakes',
         'Add the banana slices',
         'Serve and enjoy'
+      ]
+    },
+    {
+      id: 's4',
+      name: 'Greek Yogurt Protein Bowl',
+      calories: 250,
+      protein: 20,
+      carbs: 20,
+      fat: 10,
+      ingredients: ['Greek yogurt', 'protein powder', 'berries', 'chia seeds', 'honey'],
+      dietaryTags: ['vegetarian', 'gluten-free', 'high-protein'],
+      goals: ['muscle-gain', 'post-workout'],
+      prepTime: '5 mins',
+      prepSteps: [
+        'Mix Greek yogurt with protein powder',
+        'Top with berries and chia seeds',
+        'Drizzle with honey'
+      ]
+    },
+    {
+      id: 's5',
+      name: 'Keto Fat Bombs',
+      calories: 180,
+      protein: 4,
+      carbs: 2,
+      fat: 18,
+      ingredients: ['coconut oil', 'almond butter', 'cocoa powder', 'stevia'],
+      dietaryTags: ['keto', 'vegan', 'gluten-free'],
+      goals: ['weight-loss', 'ketosis'],
+      prepTime: '15 mins + freezing',
+      prepSteps: [
+        'Melt coconut oil',
+        'Mix in remaining ingredients',
+        'Pour into molds',
+        'Freeze until solid'
+      ]
+    },
+    {
+      id: 's6',
+      name: 'Pre-Workout Energy Bites',
+      calories: 120,
+      protein: 6,
+      carbs: 15,
+      fat: 6,
+      ingredients: ['dates', 'oats', 'protein powder', 'peanut butter', 'chia seeds'],
+      dietaryTags: ['vegetarian', 'dairy-free'],
+      goals: ['pre-workout', 'energy'],
+      prepTime: '15 mins',
+      prepSteps: [
+        'Process dates until paste-like',
+        'Mix in remaining ingredients',
+        'Roll into balls',
+        'Refrigerate until firm'
+      ]
+    },
+    {
+      id: 's7',
+      name: 'Protein-Packed Trail Mix',
+      calories: 210,
+      protein: 12,
+      carbs: 18,
+      fat: 12,
+      ingredients: [
+        'roasted edamame',
+        'almonds',
+        'pumpkin seeds',
+        'dried cranberries',
+        'dark chocolate chips'
+      ],
+      dietaryTags: ['vegetarian', 'gluten-free', 'high-protein'],
+      goals: ['muscle-gain', 'energy'],
+      prepTime: '5 mins',
+      prepSteps: [
+        'Combine all ingredients in a bowl',
+        'Mix well',
+        'Store in an airtight container',
+        'Portion into 1/4 cup servings'
+      ]
+    },
+    {
+      id: 's8',
+      name: 'Cucumber Hummus Bites',
+      calories: 150,
+      protein: 8,
+      carbs: 12,
+      fat: 9,
+      ingredients: [
+        'cucumber',
+        'hummus',
+        'cherry tomatoes',
+        'za\'atar spice',
+        'olive oil'
+      ],
+      dietaryTags: ['vegan', 'gluten-free', 'low-carb'],
+      goals: ['weight-loss', 'snack'],
+      prepTime: '10 mins',
+      prepSteps: [
+        'Slice cucumber into thick rounds',
+        'Top each round with hummus',
+        'Add halved cherry tomatoes',
+        'Drizzle with olive oil',
+        'Sprinkle with za\'atar spice'
       ]
     }
   ]

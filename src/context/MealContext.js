@@ -111,6 +111,34 @@ export function MealProvider({ children }) {
   const [state, dispatch] = useReducer(mealReducer, initialState);
   const [surveyData, setSurveyData] = useState(null);
 
+  // Load meals and survey data from localStorage on mount
+  useEffect(() => {
+    const savedMeals = localStorage.getItem('mealPlan');
+    const savedSurveyData = localStorage.getItem('surveyData');
+    
+    if (savedSurveyData && savedMeals) {
+      // If we have both survey data and meal plan, load them
+      setSurveyData(JSON.parse(savedSurveyData));
+      dispatch({ type: SET_MEALS, payload: JSON.parse(savedMeals) });
+    } else if (!savedMeals) {
+      // If no saved meal plan, use default
+      generateDefaultMealPlan();
+    }
+  }, []);
+
+  // Save meals to localStorage when state changes
+  useEffect(() => {
+    localStorage.setItem('mealPlan', JSON.stringify(state.mealsByDay));
+  }, [state.mealsByDay]);
+
+  // Generate personalized meal plan based on survey data
+  const generatePersonalizedMealPlan = (newSurveyData) => {
+    setSurveyData(newSurveyData);
+    const personalizedPlan = generateMealPlan(newSurveyData);
+    dispatch({ type: SET_MEALS, payload: personalizedPlan });
+    localStorage.setItem('mealPlan', JSON.stringify(personalizedPlan));
+  };
+
   // Generate default meal plan with variety
   const generateDefaultMealPlan = () => {
     const defaultPlan = {};
@@ -129,27 +157,6 @@ export function MealProvider({ children }) {
 
     dispatch({ type: SET_MEALS, payload: defaultPlan });
   };
-
-  // Generate personalized meal plan based on survey data
-  const generatePersonalizedMealPlan = (newSurveyData) => {
-    setSurveyData(newSurveyData);
-    const personalizedPlan = generateMealPlan(newSurveyData);
-    dispatch({ type: SET_MEALS, payload: personalizedPlan });
-  };
-
-  // Load meals from localStorage on mount
-  useEffect(() => {
-    const savedMeals = localStorage.getItem('mealPlan');
-    if (savedMeals) {
-      dispatch({ type: SET_MEALS, payload: JSON.parse(savedMeals) });
-    }
-    // Note: removed the else condition since initialState already has default meals
-  }, []);
-
-  // Save meals to localStorage when state changes
-  useEffect(() => {
-    localStorage.setItem('mealPlan', JSON.stringify(state.mealsByDay));
-  }, [state.mealsByDay]);
 
   // Helper functions
   const addMeal = (day, meal) => {
