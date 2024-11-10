@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSwipeable } from 'react-swipeable';
 import { motion, AnimatePresence } from 'framer-motion';
 import AddMealModal from './AddMealModal';
@@ -6,6 +6,8 @@ import { useMeals, MEAL_TYPES } from '../../context/MealContext';
 import MealStats from './MealStats';
 import RecipeSelector from './RecipeSelector';
 import RecipeDetails from './RecipeDetails';
+import ConfirmDialog from '../common/ConfirmDialog';
+import { useNotification } from '../common/Notifications';
 
 const MealTypeSection = ({ type, meals, onAddMeal, onRemoveMeal, onMealClick }) => {
   const getTypeColor = (type) => {
@@ -13,7 +15,7 @@ const MealTypeSection = ({ type, meals, onAddMeal, onRemoveMeal, onMealClick }) 
       case MEAL_TYPES.BREAKFAST: return 'border-blue-500';
       case MEAL_TYPES.LUNCH: return 'border-green-500';
       case MEAL_TYPES.DINNER: return 'border-purple-500';
-      case MEAL_TYPES.SNACK: return 'border-yellow-500';
+      case MEAL_TYPES.SNACKS: return 'border-yellow-500';
       default: return 'border-gray-500';
     }
   };
@@ -28,14 +30,15 @@ const MealTypeSection = ({ type, meals, onAddMeal, onRemoveMeal, onMealClick }) 
             className="p-3 bg-background rounded-md hover:bg-background/80 transition-colors group cursor-pointer"
             onClick={() => onMealClick(meal)}
           >
-            <div className="flex justify-between items-start">
+            <div className="flex justify-between items-center">
               <h4 className="font-medium text-text">{meal.name}</h4>
               <button 
                 onClick={(e) => {
-                  e.stopPropagation(); // Prevent opening details when removing
+                  e.stopPropagation();
                   onRemoveMeal(meal.id, type);
                 }}
-                className="text-text-muted hover:text-primary opacity-0 group-hover:opacity-100 transition-opacity"
+                className="text-text-muted hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                title="Remove meal"
               >
                 ×
               </button>
@@ -63,7 +66,12 @@ function MealPlan() {
   const [selectedMealType, setSelectedMealType] = useState(null);
   const [slideDirection, setSlideDirection] = useState(0);
   const [selectedMeal, setSelectedMeal] = useState(null);
-  const { getDayMeals, removeMeal, addMeal, generateDefaultMealPlan } = useMeals();
+  const [mealToDelete, setMealToDelete] = useState(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showHint, setShowHint] = useState(true);
+
+  const { getDayMeals, removeMeal, addMeal } = useMeals();
+  const { addNotification } = useNotification();
 
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
   const currentDayIndex = days.indexOf(selectedDay);
@@ -91,6 +99,11 @@ function MealPlan() {
       ...recipe,
       mealType: selectedMealType
     });
+    addNotification({
+      type: 'success',
+      message: `Added ${recipe.name} to ${selectedDay}'s ${selectedMealType}`,
+      duration: 3000
+    });
   };
 
   const handleCustomMeal = () => {
@@ -101,11 +114,24 @@ function MealPlan() {
   };
 
   const handleRemoveMeal = (mealId, mealType) => {
-    removeMeal(selectedDay, mealId, mealType);
+    const meal = getDayMeals(selectedDay, mealType).find(m => m.id === mealId);
+    setMealToDelete({ id: mealId, type: mealType, name: meal.name });
+    setShowDeleteConfirm(true);
   };
 
   const handleMealClick = (meal) => {
     setSelectedMeal(meal);
+  };
+
+  const handleConfirmDelete = () => {
+    const { id, type, name } = mealToDelete;
+    removeMeal(selectedDay, id, type);
+    addNotification({
+      type: 'success',
+      message: `Removed ${name} from ${selectedDay}'s ${type}`,
+      duration: 3000
+    });
+    setShowDeleteConfirm(false);
   };
 
   const handleAddCustomMeal = (mealData) => {
@@ -115,8 +141,23 @@ function MealPlan() {
       mealType: selectedMealType,
       isCustomMeal: true
     });
+    addNotification({
+      type: 'success',
+      message: `Added custom meal to ${selectedDay}'s ${selectedMealType}`,
+      duration: 3000
+    });
     setIsCustomMealModalOpen(false);
   };
+
+  useEffect(() => {
+    if (showHint) {
+      const timer = setTimeout(() => {
+        setShowHint(false);
+      }, 3000); // Show for 3 seconds
+
+      return () => clearTimeout(timer);
+    }
+  }, [showHint]);
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -177,16 +218,6 @@ function MealPlan() {
             </svg>
           </button>
         </div>
-        
-        {/* Add Reset Button */}
-        <div className="mt-4 text-center">
-          <button
-            onClick={generateDefaultMealPlan}
-            className="text-sm text-text-muted hover:text-primary transition-colors"
-          >
-            Reset to Default Meal Plan
-          </button>
-        </div>
       </motion.div>
 
       {/* Daily View with Meals */}
@@ -201,9 +232,19 @@ function MealPlan() {
           transition={{ duration: 0.3 }}
         >
           <div>
-            <div className="text-text-muted text-sm text-center mb-4 sm:mb-6">
-              Swipe or drag to change days
-            </div>
+            <AnimatePresence>
+              {showHint && (
+                <motion.div 
+                  initial={{ opacity: 1 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="text-text-muted text-sm text-center mb-4 sm:mb-6"
+                >
+                  Swipe or drag to change days
+                </motion.div>
+              )}
+            </AnimatePresence>
             
             <div className="space-y-4 sm:space-y-6">
               {Object.values(MEAL_TYPES).map((type) => (
@@ -247,6 +288,17 @@ function MealPlan() {
         recipe={selectedMeal}
         onClose={() => setSelectedMeal(null)}
         isExistingMeal={true}
+      />
+
+      <ConfirmDialog
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={handleConfirmDelete}
+        title="Remove Meal"
+        message={`Are you sure you want to remove ${mealToDelete?.name} from ${selectedDay}'s ${mealToDelete?.type}?`}
+        confirmText="Remove"
+        cancelText="Cancel"
+        type="danger"
       />
     </div>
   );

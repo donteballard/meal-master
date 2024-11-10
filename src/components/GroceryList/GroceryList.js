@@ -7,11 +7,13 @@ function GroceryList() {
   const { mealsByDay } = useMeals();
   const [groceryList, setGroceryList] = useState({});
   const [estimatedCost, setEstimatedCost] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
 
   useEffect(() => {
     const aggregateIngredients = () => {
       const ingredients = {};
       let totalCost = 0;
+      let itemCount = 0;
 
       Object.values(mealsByDay).forEach(day => {
         Object.values(day).forEach(meals => {
@@ -20,6 +22,7 @@ function GroceryList() {
               const normalizedIngredient = ingredient.toLowerCase();
               if (ingredients[normalizedIngredient]) {
                 ingredients[normalizedIngredient].count += 1;
+                itemCount += 1;
               } else {
                 const estimatedPrice = getIngredientPrice(ingredient);
                 ingredients[normalizedIngredient] = {
@@ -28,8 +31,9 @@ function GroceryList() {
                   category: categorizeIngredient(normalizedIngredient),
                   estimatedCost: estimatedPrice
                 };
-                totalCost += estimatedPrice;
+                itemCount += 1;
               }
+              totalCost += getIngredientPrice(ingredient);
             });
           });
         });
@@ -37,10 +41,39 @@ function GroceryList() {
 
       setGroceryList(groupByCategory(ingredients));
       setEstimatedCost(totalCost);
+      setTotalItems(itemCount);
     };
 
     aggregateIngredients();
   }, [mealsByDay]);
+
+  const handleDeleteItem = (category, itemName) => {
+    setGroceryList(prevList => {
+      const newList = { ...prevList };
+      const items = newList[category].filter(item => item.name !== itemName);
+      
+      if (items.length === 0) {
+        delete newList[category];
+      } else {
+        newList[category] = items;
+      }
+
+      // Recalculate total cost and items
+      let newTotalCost = 0;
+      let newTotalItems = 0;
+      Object.values(newList).forEach(categoryItems => {
+        categoryItems.forEach(item => {
+          newTotalCost += item.estimatedCost * item.count;
+          newTotalItems += item.count;
+        });
+      });
+
+      setEstimatedCost(newTotalCost);
+      setTotalItems(newTotalItems);
+
+      return newList;
+    });
+  };
 
   const categorizeIngredient = (ingredient) => {
     const categories = {
@@ -86,9 +119,14 @@ function GroceryList() {
         <div className="flex justify-between items-center mb-6 no-print">
           <h1 className="text-2xl font-bold text-primary">Grocery List</h1>
           <div className="flex gap-4 items-center">
-            <span className="text-text-muted">
-              Estimated Total: <span className="text-text font-semibold">${estimatedCost.toFixed(2)}</span>
-            </span>
+            <div className="text-right">
+              <div className="text-text-muted">
+                Total Items: <span className="text-text font-semibold">{totalItems}</span>
+              </div>
+              <div className="text-text-muted">
+                Estimated Cost: <span className="text-text font-semibold">${estimatedCost.toFixed(2)}</span>
+              </div>
+            </div>
             <button
               onClick={handlePrint}
               className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-md transition-colors"
@@ -96,6 +134,14 @@ function GroceryList() {
               Print List
             </button>
           </div>
+        </div>
+
+        <div className="hidden print:block mb-4">
+          <div className="flex justify-between text-sm text-text-muted">
+            <span>Total Items: {totalItems}</span>
+            <span>Estimated Cost: ${estimatedCost.toFixed(2)}</span>
+          </div>
+          <div className="border-b border-gray-300 mt-2"></div>
         </div>
 
         <motion.div 
@@ -113,7 +159,7 @@ function GroceryList() {
                 {items.map((item, index) => (
                   <div
                     key={index}
-                    className="flex justify-between items-center p-2 hover:bg-background-light rounded-md print-row"
+                    className="flex justify-between items-center p-2 hover:bg-background-light rounded-md print-row group"
                   >
                     <span className="text-text print-text">{item.name}</span>
                     <div className="flex items-center gap-4">
@@ -123,6 +169,13 @@ function GroceryList() {
                           ~${(item.estimatedCost * item.count).toFixed(2)}
                         </span>
                       )}
+                      <button
+                        onClick={() => handleDeleteItem(category, item.name)}
+                        className="text-text-muted hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 no-print"
+                        title="Remove item"
+                      >
+                        ×
+                      </button>
                     </div>
                   </div>
                 ))}
