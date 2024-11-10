@@ -25,7 +25,10 @@ function Home() {
           <p className="text-text-muted">
             Automatically generate shopping lists from your meal plans.
           </p>
-          <button className="mt-4 px-4 py-2 bg-primary hover:bg-primary-dark text-text rounded-lg transition-colors">
+          <button
+            onClick={() => navigate('/grocery-lists')}
+            className="mt-4 px-4 py-2 bg-primary hover:bg-primary-dark text-text rounded-lg transition-colors"
+          >
             View Grocery List
           </button>
         </div>

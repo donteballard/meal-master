@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useReducer, useEffect, useState } from 'react';
-import { RECIPES } from '../data/recipes';
 import { generateMealPlan } from '../utils/mealPlanGenerator';
 import { useNotification } from '../components/common/Notifications';
 
@@ -15,55 +14,12 @@ export const MEAL_TYPES = {
   BREAKFAST: 'breakfast',
   LUNCH: 'lunch',
   DINNER: 'dinner',
-  SNACK: 'snack'
+  SNACKS: 'snacks'
 };
 
-// Initial state
+// Initial state with empty meal plan
 const initialState = {
-  mealsByDay: {
-    Monday: {
-      breakfast: [{ ...RECIPES.breakfast[0], id: Date.now() + Math.random(), mealType: 'breakfast' }],
-      lunch: [{ ...RECIPES.lunch[0], id: Date.now() + Math.random(), mealType: 'lunch' }],
-      dinner: [{ ...RECIPES.dinner[0], id: Date.now() + Math.random(), mealType: 'dinner' }],
-      snack: [{ ...RECIPES.snacks[0], id: Date.now() + Math.random(), mealType: 'snack' }]
-    },
-    Tuesday: {
-      breakfast: [{ ...RECIPES.breakfast[1], id: Date.now() + Math.random(), mealType: 'breakfast' }],
-      lunch: [{ ...RECIPES.lunch[1], id: Date.now() + Math.random(), mealType: 'lunch' }],
-      dinner: [{ ...RECIPES.dinner[1], id: Date.now() + Math.random(), mealType: 'dinner' }],
-      snack: [{ ...RECIPES.snacks[1], id: Date.now() + Math.random(), mealType: 'snack' }]
-    },
-    Wednesday: {
-      breakfast: [{ ...RECIPES.breakfast[2], id: Date.now() + Math.random(), mealType: 'breakfast' }],
-      lunch: [{ ...RECIPES.lunch[2], id: Date.now() + Math.random(), mealType: 'lunch' }],
-      dinner: [{ ...RECIPES.dinner[2], id: Date.now() + Math.random(), mealType: 'dinner' }],
-      snack: [{ ...RECIPES.snacks[2], id: Date.now() + Math.random(), mealType: 'snack' }]
-    },
-    Thursday: {
-      breakfast: [{ ...RECIPES.breakfast[0], id: Date.now() + Math.random(), mealType: 'breakfast' }],
-      lunch: [{ ...RECIPES.lunch[0], id: Date.now() + Math.random(), mealType: 'lunch' }],
-      dinner: [{ ...RECIPES.dinner[0], id: Date.now() + Math.random(), mealType: 'dinner' }],
-      snack: [{ ...RECIPES.snacks[0], id: Date.now() + Math.random(), mealType: 'snack' }]
-    },
-    Friday: {
-      breakfast: [{ ...RECIPES.breakfast[1], id: Date.now() + Math.random(), mealType: 'breakfast' }],
-      lunch: [{ ...RECIPES.lunch[1], id: Date.now() + Math.random(), mealType: 'lunch' }],
-      dinner: [{ ...RECIPES.dinner[1], id: Date.now() + Math.random(), mealType: 'dinner' }],
-      snack: [{ ...RECIPES.snacks[1], id: Date.now() + Math.random(), mealType: 'snack' }]
-    },
-    Saturday: {
-      breakfast: [{ ...RECIPES.breakfast[2], id: Date.now() + Math.random(), mealType: 'breakfast' }],
-      lunch: [{ ...RECIPES.lunch[2], id: Date.now() + Math.random(), mealType: 'lunch' }],
-      dinner: [{ ...RECIPES.dinner[2], id: Date.now() + Math.random(), mealType: 'dinner' }],
-      snack: [{ ...RECIPES.snacks[2], id: Date.now() + Math.random(), mealType: 'snack' }]
-    },
-    Sunday: {
-      breakfast: [{ ...RECIPES.breakfast[0], id: Date.now() + Math.random(), mealType: 'breakfast' }],
-      lunch: [{ ...RECIPES.lunch[0], id: Date.now() + Math.random(), mealType: 'lunch' }],
-      dinner: [{ ...RECIPES.dinner[0], id: Date.now() + Math.random(), mealType: 'dinner' }],
-      snack: [{ ...RECIPES.snacks[0], id: Date.now() + Math.random(), mealType: 'snack' }]
-    }
-  }
+  mealsByDay: {}
 };
 
 // Reducer
@@ -75,9 +31,9 @@ function mealReducer(state, action) {
         mealsByDay: {
           ...state.mealsByDay,
           [action.payload.day]: {
-            ...state.mealsByDay[action.payload.day],
+            ...state.mealsByDay[action.payload.day] || {},
             [action.payload.meal.mealType]: [
-              ...state.mealsByDay[action.payload.day][action.payload.meal.mealType],
+              ...(state.mealsByDay[action.payload.day]?.[action.payload.meal.mealType] || []),
               { ...action.payload.meal, id: Date.now() }
             ]
           }
@@ -122,15 +78,14 @@ export function MealProvider({ children }) {
       // If we have both survey data and meal plan, load them
       setSurveyData(JSON.parse(savedSurveyData));
       dispatch({ type: SET_MEALS, payload: JSON.parse(savedMeals) });
-    } else if (!savedMeals) {
-      // If no saved meal plan, use default
-      generateDefaultMealPlan();
     }
   }, []);
 
   // Save meals to localStorage when state changes
   useEffect(() => {
-    localStorage.setItem('mealPlan', JSON.stringify(state.mealsByDay));
+    if (Object.keys(state.mealsByDay).length > 0) {
+      localStorage.setItem('mealPlan', JSON.stringify(state.mealsByDay));
+    }
   }, [state.mealsByDay]);
 
   // Generate personalized meal plan based on survey data
@@ -141,37 +96,22 @@ export function MealProvider({ children }) {
       dispatch({ type: SET_MEALS, payload: personalizedPlan });
       localStorage.setItem('mealPlan', JSON.stringify(personalizedPlan));
       
-      addNotification({
-        type: 'success',
-        message: 'Your meal plan has been updated successfully!',
-        duration: 3000
-      });
+      // Only show notification if this is an update, not initial generation
+      if (state.mealsByDay && Object.keys(state.mealsByDay).length > 0) {
+        addNotification({
+          type: 'success',
+          message: 'Your meal plan has been updated successfully!',
+          duration: 3000
+        });
+      }
     } catch (error) {
+      console.error('Error generating meal plan:', error);
       addNotification({
         type: 'error',
         message: 'Failed to generate meal plan. Please try again.',
         duration: 5000
       });
     }
-  };
-
-  // Generate default meal plan with variety
-  const generateDefaultMealPlan = () => {
-    const defaultPlan = {};
-    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-    
-    days.forEach((day, index) => {
-      // Rotate through recipes to add variety
-      const recipeIndex = index % 3; // We have 3 recipes for each type
-      defaultPlan[day] = {
-        breakfast: [{ ...RECIPES.breakfast[recipeIndex], id: Date.now() + Math.random(), mealType: 'breakfast' }],
-        lunch: [{ ...RECIPES.lunch[recipeIndex], id: Date.now() + Math.random(), mealType: 'lunch' }],
-        dinner: [{ ...RECIPES.dinner[recipeIndex], id: Date.now() + Math.random(), mealType: 'dinner' }],
-        snack: [{ ...RECIPES.snacks[recipeIndex], id: Date.now() + Math.random(), mealType: 'snack' }]
-      };
-    });
-
-    dispatch({ type: SET_MEALS, payload: defaultPlan });
   };
 
   // Helper functions
@@ -182,7 +122,7 @@ export function MealProvider({ children }) {
   const removeMeal = (day, mealId, mealType) => {
     dispatch({ 
       type: REMOVE_MEAL, 
-      payload: { day, mealId, mealType }  // Make sure mealType is included
+      payload: { day, mealId, mealType }
     });
   };
 
@@ -191,14 +131,14 @@ export function MealProvider({ children }) {
   };
 
   const getDayTotals = (day) => {
-    const mealTypes = Object.values(MEAL_TYPES);
-    return mealTypes.reduce((dayTotals, type) => {
-      const meals = state.mealsByDay[day]?.[type] || [];
+    if (!state.mealsByDay[day]) return { calories: 0, protein: 0, carbs: 0, fat: 0 };
+
+    return Object.values(state.mealsByDay[day]).reduce((dayTotals, meals) => {
       return meals.reduce((totals, meal) => ({
-        calories: totals.calories + Number(meal.calories),
-        protein: totals.protein + Number(meal.protein),
-        carbs: totals.carbs + Number(meal.carbs),
-        fat: totals.fat + Number(meal.fat),
+        calories: totals.calories + Number(meal.calories || 0),
+        protein: totals.protein + Number(meal.protein || 0),
+        carbs: totals.carbs + Number(meal.carbs || 0),
+        fat: totals.fat + Number(meal.fat || 0),
       }), dayTotals);
     }, { calories: 0, protein: 0, carbs: 0, fat: 0 });
   };
@@ -210,7 +150,6 @@ export function MealProvider({ children }) {
       removeMeal,
       getDayMeals,
       getDayTotals,
-      generateDefaultMealPlan,
       generatePersonalizedMealPlan,
       surveyData
     }}>
@@ -219,7 +158,6 @@ export function MealProvider({ children }) {
   );
 }
 
-// Custom hook to use the meal context
 export function useMeals() {
   const context = useContext(MealContext);
   if (!context) {
