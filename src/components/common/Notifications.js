@@ -31,7 +31,7 @@ export function NotificationProvider({ children }) {
   const [notifications, dispatch] = useReducer(notificationReducer, []);
 
   const addNotification = useCallback((notification) => {
-    const id = Date.now();
+    const id = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     dispatch({
       type: ADD_NOTIFICATION,
       payload: { ...notification, id }
@@ -56,17 +56,21 @@ export function NotificationProvider({ children }) {
   return (
     <NotificationContext.Provider value={{ addNotification, removeNotification }}>
       {children}
-      <NotificationContainer notifications={notifications} />
+      <NotificationContainer notifications={notifications} removeNotification={removeNotification} />
     </NotificationContext.Provider>
   );
 }
 
-function NotificationContainer({ notifications }) {
+function NotificationContainer({ notifications, removeNotification }) {
   return (
     <div className="fixed bottom-4 right-4 space-y-2 z-50">
       <AnimatePresence>
         {notifications.map(notification => (
-          <Notification key={notification.id} {...notification} />
+          <Notification 
+            key={notification.id} 
+            {...notification} 
+            removeNotification={removeNotification}
+          />
         ))}
       </AnimatePresence>
     </div>

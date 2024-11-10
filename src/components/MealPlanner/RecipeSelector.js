@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { RECIPES } from '../../data/recipes';
 import { MEAL_TYPES } from '../../context/MealContext';
 
-function RecipeSelector({ isOpen, onClose, selectedDay, mealType, onSelectRecipe, onCustomMeal }) {
+function RecipeSelector({ isOpen, onClose, selectedDay, mealType = '', onSelectRecipe, onCustomMeal }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTag, setSelectedTag] = useState('all');
 
@@ -17,12 +17,15 @@ function RecipeSelector({ isOpen, onClose, selectedDay, mealType, onSelectRecipe
   }, [isOpen]);
 
   const getMealTypeKey = (type) => {
-    switch (type) {
+    if (!type) return '';
+    
+    switch (type.toLowerCase()) {
       case MEAL_TYPES.BREAKFAST: return 'breakfast';
       case MEAL_TYPES.LUNCH: return 'lunch';
       case MEAL_TYPES.DINNER: return 'dinner';
-      case MEAL_TYPES.SNACK: return 'snacks';
-      default: return type;
+      case MEAL_TYPES.SNACKS:
+      case 'snack': return 'snacks';
+      default: return type.toLowerCase();
     }
   };
 

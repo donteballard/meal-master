@@ -116,7 +116,15 @@ export function MealProvider({ children }) {
 
   // Helper functions
   const addMeal = (day, meal) => {
-    dispatch({ type: ADD_MEAL, payload: { day, meal } });
+    const correctedMealType = meal.mealType === 'snack' ? 'snacks' : meal.mealType;
+    
+    dispatch({
+      type: ADD_MEAL,
+      payload: {
+        day,
+        meal: { ...meal, mealType: correctedMealType }
+      }
+    });
   };
 
   const removeMeal = (day, mealId, mealType) => {
