@@ -4,15 +4,30 @@ import { useAuth } from '../../context/AuthContext';
 import { useMeals } from '../../context/MealContext';
 import DietarySurvey from '../Survey/DietarySurvey';
 import { convertHeightFromMetric, convertWeightFromMetric } from '../../utils/conversions';
+import { useNotification } from '../common/Notifications';
+import ConfirmDialog from '../common/ConfirmDialog';
+import LoadingState from '../common/LoadingState';
 
 function Profile() {
   const { user, logout } = useAuth();
   const { generatePersonalizedMealPlan } = useMeals();
+  const { addNotification } = useNotification();
   const [isEditing, setIsEditing] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleLogout = () => {
+    setShowLogoutConfirm(true);
+  };
+
+  const confirmLogout = () => {
     logout();
+    addNotification({
+      type: 'info',
+      message: 'You have been logged out successfully',
+      duration: 3000
+    });
     navigate('/login');
   };
 
@@ -55,15 +70,36 @@ function Profile() {
     };
   };
 
-  const handleSurveyUpdate = (updatedData) => {
-    // Save the updated survey data
-    localStorage.setItem('surveyData', JSON.stringify(updatedData));
-    
-    // Generate new meal plan based on updated preferences
-    generatePersonalizedMealPlan(updatedData);
-    
-    setIsEditing(false);
+  const handleSurveyUpdate = async (updatedData) => {
+    try {
+      setIsLoading(true);
+      // Save the updated survey data
+      localStorage.setItem('surveyData', JSON.stringify(updatedData));
+      
+      // Generate new meal plan based on updated preferences
+      generatePersonalizedMealPlan(updatedData);
+      
+      addNotification({
+        type: 'success',
+        message: 'Your preferences have been updated successfully!',
+        duration: 5000
+      });
+      
+      setIsEditing(false);
+    } catch (error) {
+      addNotification({
+        type: 'error',
+        message: 'Failed to update preferences. Please try again.',
+        duration: 5000
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  if (isLoading) {
+    return <LoadingState message="Updating your preferences..." fullScreen />;
+  }
 
   if (isEditing) {
     const currentSurveyData = JSON.parse(localStorage.getItem('surveyData'));
@@ -91,52 +127,65 @@ function Profile() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
-      <div className="bg-background-light rounded-lg p-6">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-2xl font-bold text-primary">Profile</h1>
-          <button
-            onClick={handleLogout}
-            className="px-4 py-2 text-text-muted hover:text-text"
-          >
-            Logout
-          </button>
-        </div>
+    <>
+      <div className="max-w-3xl mx-auto p-6">
+        <div className="bg-background-light rounded-lg p-6">
+          <div className="flex justify-between items-center mb-8">
+            <h1 className="text-2xl font-bold text-primary">Profile</h1>
+            <button
+              onClick={handleLogout}
+              className="px-4 py-2 text-text-muted hover:text-text"
+            >
+              Logout
+            </button>
+          </div>
 
-        {/* User Info */}
-        <div className="mb-8">
-          <h2 className="text-lg font-semibold text-primary mb-4">Account Information</h2>
-          <div className="bg-background rounded-lg p-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-text-muted text-sm">Email</label>
-                <p className="text-text">{user.email}</p>
-              </div>
-              <div>
-                <label className="block text-text-muted text-sm">Member Since</label>
-                <p className="text-text">{new Date(user.id).toLocaleDateString()}</p>
+          {/* User Info */}
+          <div className="mb-8">
+            <h2 className="text-lg font-semibold text-primary mb-4">Account Information</h2>
+            <div className="bg-background rounded-lg p-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-text-muted text-sm">Email</label>
+                  <p className="text-text">{user.email}</p>
+                </div>
+                <div>
+                  <label className="block text-text-muted text-sm">Member Since</label>
+                  <p className="text-text">{new Date(user.id).toLocaleDateString()}</p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Survey Data Summary */}
-        <div className="mb-8">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold text-primary">Meal Plan Preferences</h2>
-            <button
-              onClick={() => setIsEditing(true)}
-              className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-md transition-colors"
-            >
-              Edit Preferences
-            </button>
-          </div>
-          <div className="space-y-4">
-            <PreferenceSection />
+          {/* Survey Data Summary */}
+          <div className="mb-8">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-semibold text-primary">Meal Plan Preferences</h2>
+              <button
+                onClick={() => setIsEditing(true)}
+                className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-md transition-colors"
+              >
+                Edit Preferences
+              </button>
+            </div>
+            <div className="space-y-4">
+              <PreferenceSection />
+            </div>
           </div>
         </div>
       </div>
-    </div>
+
+      <ConfirmDialog
+        isOpen={showLogoutConfirm}
+        onClose={() => setShowLogoutConfirm(false)}
+        onConfirm={confirmLogout}
+        title="Confirm Logout"
+        message="Are you sure you want to log out?"
+        confirmText="Logout"
+        cancelText="Cancel"
+        type="warning"
+      />
+    </>
   );
 }
 

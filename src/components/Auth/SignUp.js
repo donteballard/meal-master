@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import LoadingState from '../common/LoadingState';
+import { useNotification } from '../common/Notifications';
 
 function SignUp() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   
   const { login } = useAuth();
   const navigate = useNavigate();
+  const { addNotification } = useNotification();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,7 +24,7 @@ function SignUp() {
     
     try {
       setError('');
-      setLoading(true);
+      setIsLoading(true);
       
       // For now, just mock the signup and login
       await login({
@@ -30,13 +33,28 @@ function SignUp() {
         name: email.split('@')[0]
       });
       
+      addNotification({
+        type: 'success',
+        message: 'Account created successfully!',
+        duration: 3000
+      });
+      
       navigate('/survey');
     } catch (err) {
       setError('Failed to create an account');
+      addNotification({
+        type: 'error',
+        message: 'Failed to create account. Please try again.',
+        duration: 5000
+      });
+    } finally {
+      setIsLoading(false);
     }
-    
-    setLoading(false);
   };
+
+  if (isLoading) {
+    return <LoadingState message="Creating your account..." fullScreen />;
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
@@ -114,10 +132,10 @@ function SignUp() {
           <div>
             <button
               type="submit"
-              disabled={loading}
+              disabled={isLoading}
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50"
             >
-              {loading ? 'Creating Account...' : 'Create Account'}
+              {isLoading ? 'Creating Account...' : 'Create Account'}
             </button>
           </div>
         </form>

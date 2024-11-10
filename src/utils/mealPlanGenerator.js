@@ -22,14 +22,23 @@ const meetsRestrictions = (recipe, restrictions) => {
             ing.toLowerCase().includes(dairy)
           )
         );
-      // Add more restriction checks as needed
-      default:
+      case 'KETO':
+        return recipe.dietaryTags.includes('keto') || recipe.carbs <= 20;
+      case 'PALEO':
+        return recipe.dietaryTags.includes('paleo');
+      case 'NONE':
         return true;
+      default:
+        // For any custom dietary restrictions, check if the recipe contains the restricted ingredient
+        const restrictionLower = restriction.toLowerCase();
+        return !recipe.ingredients.some(ingredient => 
+          ingredient.toLowerCase().includes(restrictionLower)
+        );
     }
   });
 };
 
-// Helper function to check if a recipe contains allergens or disliked ingredients
+// Enhanced helper function to check recipe safety
 const isRecipeSafe = (recipe, allergies, dislikes) => {
   const allergyCheck = allergies.length === 0 || 
     (allergies.length === 1 && allergies[0] === 'NONE') ||
@@ -44,9 +53,100 @@ const isRecipeSafe = (recipe, allergies, dislikes) => {
   return allergyCheck && dislikeCheck;
 };
 
-// Helper function to check if recipe matches user's goals
-const matchesGoals = (recipe, goals) => {
-  return goals.some(goal => recipe.goals.includes(goal.toLowerCase()));
+// Enhanced helper function to match goals with weighted scoring
+const getGoalScore = (recipe, goals) => {
+  let score = 0;
+  goals.forEach(goal => {
+    switch (goal) {
+      case 'LOSE_WEIGHT':
+        score += recipe.calories < 400 ? 2 : 
+                recipe.calories < 600 ? 1 : 0;
+        score += recipe.fat < 15 ? 1 : 0;
+        break;
+      case 'GAIN_MUSCLE':
+        score += recipe.protein > 30 ? 2 : 
+                recipe.protein > 20 ? 1 : 0;
+        score += recipe.calories > 400 ? 1 : 0;
+        break;
+      case 'IMPROVE_HEALTH':
+        score += recipe.dietaryTags.includes('heart-health') ? 2 : 0;
+        score += recipe.dietaryTags.some(tag => 
+          ['mediterranean', 'low-fat', 'gluten-free'].includes(tag)
+        ) ? 1 : 0;
+        break;
+      case 'ATHLETIC':
+        score += recipe.protein > 25 ? 1 : 0;
+        score += recipe.carbs > 40 ? 1 : 0;
+        break;
+      case 'MAINTAIN':
+        score += recipe.calories >= 300 && recipe.calories <= 600 ? 1 : 0;
+        score += recipe.protein >= 15 && recipe.protein <= 30 ? 1 : 0;
+        break;
+      default:
+        // For any unrecognized goals, give a neutral score
+        score += 0.5;
+        break;
+    }
+  });
+  return score / goals.length; // Normalize score
+};
+
+// Helper function to check cooking skill match
+const getSkillScore = (recipe, userSkill) => {
+  const skillLevels = {
+    'beginner': 1,
+    'intermediate': 2,
+    'advanced': 3
+  };
+
+  const recipeDifficulty = recipe.prepSteps.length <= 3 ? 1 :
+                          recipe.prepSteps.length <= 5 ? 2 : 3;
+  
+  const userSkillLevel = skillLevels[userSkill];
+  
+  // Perfect match or recipe is easier than skill level
+  if (recipeDifficulty <= userSkillLevel) return 1;
+  
+  // Recipe is one level above skill
+  if (recipeDifficulty === userSkillLevel + 1) return 0.5;
+  
+  // Recipe is too difficult
+  return 0;
+};
+
+// Helper function to check cuisine preferences
+const getCuisineScore = (recipe, preferredCuisines) => {
+  if (!preferredCuisines || preferredCuisines.length === 0) return 1;
+  
+  return recipe.dietaryTags.some(tag => 
+    preferredCuisines.some(cuisine => 
+      tag.toLowerCase().includes(cuisine.toLowerCase())
+    )
+  ) ? 1 : 0.5;
+};
+
+// Helper function to get recipes for a specific meal type that meet all criteria
+const getValidRecipes = (mealType, surveyData) => {
+  const { preferences, personalInfo, goals } = surveyData;
+  const recipeType = mealType.toLowerCase();
+  const allRecipes = RECIPES[recipeType] || [];
+  
+  // First filter for hard requirements
+  const validRecipes = allRecipes.filter(recipe => 
+    meetsRestrictions(recipe, preferences.dietaryRestrictions) &&
+    isRecipeSafe(recipe, preferences.allergies, preferences.dislikedIngredients) &&
+    meetsTimeConstraint(recipe, personalInfo.maxCookingTime)
+  );
+
+  // Score and sort remaining recipes
+  return validRecipes.map(recipe => ({
+    ...recipe,
+    score: (
+      getGoalScore(recipe, goals.primary) * 0.4 +    // 40% weight for goals
+      getSkillScore(recipe, personalInfo.cookingSkill) * 0.3 +  // 30% weight for skill
+      getCuisineScore(recipe, preferences.preferredCuisines) * 0.3  // 30% weight for cuisine
+    )
+  })).sort((a, b) => b.score - a.score);
 };
 
 // Helper function to filter recipes based on cooking time
@@ -55,24 +155,9 @@ const meetsTimeConstraint = (recipe, maxTime) => {
   return !isNaN(prepTimeMinutes) && prepTimeMinutes <= maxTime;
 };
 
-// Helper function to get recipes for a specific meal type that meet all criteria
-const getValidRecipes = (mealType, surveyData, preferences) => {
-  // Convert meal type to match RECIPES object keys
-  const recipeType = mealType.toLowerCase();
-  const recipesKey = recipeType === 'snack' ? 'snacks' : recipeType; // Handle 'snacks' vs 'snack'
-  const allRecipes = RECIPES[recipesKey] || [];
-  
-  return allRecipes.filter(recipe => 
-    meetsRestrictions(recipe, preferences.dietaryRestrictions) &&
-    isRecipeSafe(recipe, preferences.allergies, preferences.dislikedIngredients) &&
-    matchesGoals(recipe, surveyData.goals.primary) &&
-    meetsTimeConstraint(recipe, surveyData.personalInfo.maxCookingTime)
-  );
-};
-
 // Main function to generate a meal plan
 export const generateMealPlan = (surveyData) => {
-  const { nutritionTargets, preferences } = surveyData;
+  const { nutritionTargets } = surveyData;
   const mealsPerDay = parseInt(nutritionTargets.mealsPerDay);
   const mealCalories = nutritionTargets.mealCalories;
 
@@ -82,9 +167,9 @@ export const generateMealPlan = (surveyData) => {
       case 1: return ['dinner'];
       case 2: return ['breakfast', 'dinner'];
       case 3: return ['breakfast', 'lunch', 'dinner'];
-      case 4: return ['breakfast', 'lunch', 'dinner', 'snack'];
-      case 5: return ['breakfast', 'snack', 'lunch', 'dinner', 'snack'];
-      case 6: return ['breakfast', 'snack', 'lunch', 'snack', 'dinner', 'snack'];
+      case 4: return ['breakfast', 'lunch', 'dinner', 'snacks'];
+      case 5: return ['breakfast', 'snacks', 'lunch', 'dinner', 'snacks'];
+      case 6: return ['breakfast', 'snacks', 'lunch', 'snacks', 'dinner', 'snacks'];
       default: return ['breakfast', 'lunch', 'dinner'];
     }
   };
@@ -92,42 +177,58 @@ export const generateMealPlan = (surveyData) => {
   const mealTypes = getMealTypes(mealsPerDay);
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
   
+  // Track used recipes to ensure variety
+  const usedRecipes = new Set();
+  
   // Generate meal plan for each day
   const mealPlan = {};
   
   days.forEach(day => {
     mealPlan[day] = {};
     mealTypes.forEach((type, index) => {
-      const validRecipes = getValidRecipes(type, surveyData, preferences);
-      console.log(`${day} ${type}: Found ${validRecipes.length} valid recipes`); // Debug log
+      const validRecipes = getValidRecipes(type, surveyData)
+        .filter(recipe => !usedRecipes.has(recipe.id));
       
       if (validRecipes.length === 0) {
-        // If no valid recipes found, use a random recipe from that meal type
-        const recipesKey = type === 'snack' ? 'snacks' : type;
-        const allRecipes = RECIPES[recipesKey] || [];
-        const randomRecipe = allRecipes[Math.floor(Math.random() * allRecipes.length)];
-        mealPlan[day][type] = [{
-          ...randomRecipe,
-          id: Date.now() + Math.random(),
-          mealType: type
-        }];
-      } else {
-        // Select a recipe that best matches the calorie target for this meal
-        const targetCalories = mealCalories[index];
-        const bestMatch = validRecipes.reduce((prev, curr) => {
-          const prevDiff = Math.abs(prev.calories - targetCalories);
-          const currDiff = Math.abs(curr.calories - targetCalories);
-          return currDiff < prevDiff ? curr : prev;
-        });
+        // If no valid recipes found or all used, reset used recipes and try again
+        usedRecipes.clear();
+        const allValidRecipes = getValidRecipes(type, surveyData);
+        const bestMatch = selectBestMatch(allValidRecipes, mealCalories[index]);
         
         mealPlan[day][type] = [{
           ...bestMatch,
           id: Date.now() + Math.random(),
           mealType: type
         }];
+        
+        usedRecipes.add(bestMatch.id);
+      } else {
+        const bestMatch = selectBestMatch(validRecipes, mealCalories[index]);
+        
+        mealPlan[day][type] = [{
+          ...bestMatch,
+          id: Date.now() + Math.random(),
+          mealType: type
+        }];
+        
+        usedRecipes.add(bestMatch.id);
       }
     });
   });
 
   return mealPlan;
+};
+
+// Helper function to select best matching recipe based on calories and score
+const selectBestMatch = (recipes, targetCalories) => {
+  return recipes.reduce((best, current) => {
+    const currentCalorieDiff = Math.abs(current.calories - targetCalories);
+    const bestCalorieDiff = Math.abs(best.calories - targetCalories);
+    
+    // Consider both score and calorie match
+    const currentScore = current.score - (currentCalorieDiff / targetCalories) * 0.5;
+    const bestScore = best.score - (bestCalorieDiff / targetCalories) * 0.5;
+    
+    return currentScore > bestScore ? current : best;
+  });
 }; 

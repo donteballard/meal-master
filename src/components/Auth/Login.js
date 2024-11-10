@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useNotification } from '../common/Notifications';
+import LoadingState from '../common/LoadingState';
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const { addNotification } = useNotification();
   
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -18,7 +21,7 @@ function Login() {
     
     try {
       setError('');
-      setLoading(true);
+      setIsLoading(true);
       
       // For now, just mock the login
       await login({
@@ -27,13 +30,28 @@ function Login() {
         name: email.split('@')[0]
       });
       
+      addNotification({
+        type: 'success',
+        message: 'Welcome back!',
+        duration: 3000
+      });
+      
       navigate(from, { replace: true });
     } catch (err) {
       setError('Failed to sign in');
+      addNotification({
+        type: 'error',
+        message: 'Failed to sign in. Please check your credentials.',
+        duration: 5000
+      });
+    } finally {
+      setIsLoading(false);
     }
-    
-    setLoading(false);
   };
+
+  if (isLoading) {
+    return <LoadingState message="Signing in..." fullScreen />;
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
@@ -95,10 +113,10 @@ function Login() {
           <div>
             <button
               type="submit"
-              disabled={loading}
+              disabled={isLoading}
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50"
             >
-              {loading ? 'Signing in...' : 'Sign in'}
+              {isLoading ? 'Signing in...' : 'Sign in'}
             </button>
           </div>
         </form>

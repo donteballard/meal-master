@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { generateMockMealData } from '../../utils/mealGenerator';
+import { useNotification } from '../common/Notifications';
 
 function AddMealModal({ isOpen, onClose, selectedDay, selectedMealType, onSubmit }) {
   const [mealName, setMealName] = useState('');
+  const { addNotification } = useNotification();
 
   useEffect(() => {
     if (isOpen) {
@@ -22,6 +24,14 @@ function AddMealModal({ isOpen, onClose, selectedDay, selectedMealType, onSubmit
     
     onSubmit(generatedMealData);
     setMealName('');
+    
+    addNotification({
+      type: 'success',
+      message: 'Custom meal added successfully',
+      duration: 3000
+    });
+    
+    onClose();
   };
 
   return (

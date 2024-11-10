@@ -10,42 +10,51 @@ import SignUp from './components/Auth/SignUp';
 import SurveyWrapper from './components/Survey/SurveyWrapper';
 import MealPlanLayout from './components/MealPlanner/MealPlanLayout';
 import Profile from './components/Profile/Profile';
+import GroceryList from './components/GroceryList/GroceryList';
+import { NotificationProvider } from './components/common/Notifications';
 
 function App() {
   return (
     <Router>
       <AuthProvider>
-        <MealProvider>
-          <div className="min-h-screen bg-background text-text">
-            <Navbar />
-            <Routes>
-              {/* Public routes */}
-              <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<SignUp />} />
+        <NotificationProvider>
+          <MealProvider>
+            <div className="min-h-screen bg-background text-text">
+              <Navbar />
+              <Routes>
+                {/* Public routes */}
+                <Route path="/" element={<Home />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<SignUp />} />
 
-              {/* Protected routes */}
-              <Route path="/survey" element={
-                <PrivateRoute>
-                  <SurveyWrapper />
-                </PrivateRoute>
-              } />
-              <Route path="/meal-plans" element={
-                <PrivateRoute>
-                  <MealPlanLayout />
-                </PrivateRoute>
-              } />
-              <Route path="/profile" element={
-                <PrivateRoute>
-                  <Profile />
-                </PrivateRoute>
-              } />
+                {/* Protected routes */}
+                <Route path="/survey" element={
+                  <PrivateRoute>
+                    <SurveyWrapper />
+                  </PrivateRoute>
+                } />
+                <Route path="/meal-plans" element={
+                  <PrivateRoute>
+                    <MealPlanLayout />
+                  </PrivateRoute>
+                } />
+                <Route path="/grocery-lists" element={
+                  <PrivateRoute>
+                    <GroceryList />
+                  </PrivateRoute>
+                } />
+                <Route path="/profile" element={
+                  <PrivateRoute>
+                    <Profile />
+                  </PrivateRoute>
+                } />
 
-              {/* Catch-all redirect */}
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </div>
-        </MealProvider>
+                {/* Catch-all redirect */}
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </div>
+          </MealProvider>
+        </NotificationProvider>
       </AuthProvider>
     </Router>
   );

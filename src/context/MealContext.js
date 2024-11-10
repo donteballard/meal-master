@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useReducer, useEffect, useState } from 'react';
 import { RECIPES } from '../data/recipes';
 import { generateMealPlan } from '../utils/mealPlanGenerator';
+import { useNotification } from '../components/common/Notifications';
 
 const MealContext = createContext();
 
@@ -110,6 +111,7 @@ function mealReducer(state, action) {
 export function MealProvider({ children }) {
   const [state, dispatch] = useReducer(mealReducer, initialState);
   const [surveyData, setSurveyData] = useState(null);
+  const { addNotification } = useNotification();
 
   // Load meals and survey data from localStorage on mount
   useEffect(() => {
@@ -133,10 +135,24 @@ export function MealProvider({ children }) {
 
   // Generate personalized meal plan based on survey data
   const generatePersonalizedMealPlan = (newSurveyData) => {
-    setSurveyData(newSurveyData);
-    const personalizedPlan = generateMealPlan(newSurveyData);
-    dispatch({ type: SET_MEALS, payload: personalizedPlan });
-    localStorage.setItem('mealPlan', JSON.stringify(personalizedPlan));
+    try {
+      setSurveyData(newSurveyData);
+      const personalizedPlan = generateMealPlan(newSurveyData);
+      dispatch({ type: SET_MEALS, payload: personalizedPlan });
+      localStorage.setItem('mealPlan', JSON.stringify(personalizedPlan));
+      
+      addNotification({
+        type: 'success',
+        message: 'Your meal plan has been updated successfully!',
+        duration: 3000
+      });
+    } catch (error) {
+      addNotification({
+        type: 'error',
+        message: 'Failed to generate meal plan. Please try again.',
+        duration: 5000
+      });
+    }
   };
 
   // Generate default meal plan with variety
