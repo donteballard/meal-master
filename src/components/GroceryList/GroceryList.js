@@ -77,16 +77,55 @@ function GroceryList() {
 
   const categorizeIngredient = (ingredient) => {
     const categories = {
-      protein: ['chicken', 'beef', 'fish', 'tofu', 'eggs', 'salmon'],
-      produce: ['tomato', 'lettuce', 'cucumber', 'carrot', 'spinach', 'avocado'],
-      grains: ['rice', 'quinoa', 'pasta', 'bread', 'oats'],
-      dairy: ['milk', 'cheese', 'yogurt', 'butter'],
-      pantry: ['oil', 'spices', 'sauce', 'nuts', 'seeds'],
-      // Add more categories as needed
+      protein: [
+        'chicken', 'beef', 'fish', 'tofu', 'eggs', 'salmon', 'tuna', 'turkey', 
+        'bacon', 'whey protein', 'protein powder', 'edamame', 'chickpeas', 'lentils',
+        'egg whites'
+      ],
+      produce: [
+        'tomato', 'lettuce', 'cucumber', 'carrot', 'spinach', 'avocado', 'banana',
+        'berries', 'apple', 'kale', 'broccoli', 'bell pepper', 'onion', 'garlic',
+        'sweet potato', 'mushroom', 'zucchini', 'asparagus', 'peas', 'cherry tomatoes',
+        'mixed vegetables', 'cauliflower', 'olives', 'snap peas'
+      ],
+      grains: [
+        'rice', 'quinoa', 'pasta', 'bread', 'oats', 'granola', 'rice cakes',
+        'whole grain', 'brown rice', 'oat flour', 'pita'
+      ],
+      dairy: [
+        'milk', 'cheese', 'yogurt', 'butter', 'greek yogurt', 'feta', 'parmesan',
+        'almond milk', 'coconut milk'
+      ],
+      pantry: [
+        'oil', 'sauce', 'nuts', 'seeds', 'peanut butter', 'almond butter',
+        'honey', 'maple syrup', 'soy sauce', 'tahini', 'olive oil', 'coconut oil',
+        'vanilla extract', 'baking powder', 'cocoa powder', 'stevia', 'hummus',
+        'marinara', 'nutritional yeast', 'chia seeds', 'protein powder',
+        'vegetable broth', 'chicken broth', 'beef broth'
+      ],
+      snacks: [
+        'almonds', 'walnuts', 'dried cranberries', 'dark chocolate', 'dates',
+        'mixed nuts', 'trail mix', 'chocolate chips'
+      ],
+      'herbs and spices': [
+        'cinnamon', 'turmeric', 'za\'atar', 'herbs', 'ginger', 'mexican spices',
+        'curry spices', 'spices', 'basil', 'oregano', 'thyme', 'rosemary',
+        'cilantro', 'parsley', 'mint', 'bay leaves', 'pepper', 'salt'
+      ],
+      legumes: [
+        'chickpeas', 'black beans', 'lentils', 'beans', 'hummus', 'edamame'
+      ],
+      condiments: [
+        'mayo', 'honey', 'maple syrup', 'soy sauce', 'tahini', 'lemon juice',
+        'lime juice', 'marinara sauce', 'dressing', 'lemon', 'lime', 'vinegar',
+        'mustard', 'hot sauce', 'worcestershire sauce'
+      ]
     };
 
+    const normalizedIngredient = ingredient.toLowerCase();
+
     for (const [category, items] of Object.entries(categories)) {
-      if (items.some(item => ingredient.includes(item))) {
+      if (items.some(item => normalizedIngredient.includes(item))) {
         return category;
       }
     }
@@ -153,7 +192,7 @@ function GroceryList() {
           {Object.entries(groceryList).map(([category, items]) => (
             <div key={category} className="bg-background rounded-lg p-4 print-item">
               <h2 className="text-lg font-semibold text-primary capitalize mb-4 print-category">
-                {category}
+                {category.replace(/_/g, ' ')}
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {items.map((item, index) => (
