@@ -79,12 +79,6 @@ function Profile() {
       // Generate new meal plan based on updated preferences
       generatePersonalizedMealPlan(updatedData);
       
-      addNotification({
-        type: 'success',
-        message: 'Your preferences have been updated successfully!',
-        duration: 5000
-      });
-      
       setIsEditing(false);
     } catch (error) {
       addNotification({

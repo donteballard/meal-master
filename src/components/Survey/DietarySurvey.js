@@ -345,10 +345,8 @@ function DietarySurvey({ onComplete, initialData, isEditing = false }) {
   );
 
   const renderStep2 = () => {
-    // Check if required fields are filled for weight/muscle goals
-    const isWeightFieldsRequired = formData.primaryGoal.includes('LOSE_WEIGHT') || formData.primaryGoal.includes('GAIN_MUSCLE');
     const isWeightFieldsValid = formData.targetWeightLbs && formData.weeklyGoal;
-    const showValidationErrors = isWeightFieldsRequired && formData.attempted && !isWeightFieldsValid;
+    const showValidationErrors = formData.attempted && !isWeightFieldsValid;
 
     return (
       <div className="space-y-6">
@@ -374,62 +372,59 @@ function DietarySurvey({ onComplete, initialData, isEditing = false }) {
           </div>
         </div>
 
-        {isWeightFieldsRequired && (
-          <>
-            <div>
-              <label className="block text-text-muted mb-2">
-                Target Weight (lbs)
-                <span className="text-primary ml-1">*</span>
-              </label>
-              <div className="flex items-center">
-                <input
-                  type="number"
-                  name="targetWeightLbs"
-                  value={formData.targetWeightLbs}
-                  onChange={handleInputChange}
-                  className={`w-full p-2 rounded-md bg-background border ${
-                    showValidationErrors && !formData.targetWeightLbs
-                      ? 'border-red-500'
-                      : 'border-gray-700'
-                  } text-text`}
-                  placeholder="Enter target weight"
-                  required={isWeightFieldsRequired}
-                />
-                <span className="ml-2 text-text-muted">lbs</span>
-              </div>
-              {showValidationErrors && !formData.targetWeightLbs && (
-                <p className="mt-1 text-sm text-red-500">Target weight is required</p>
-              )}
-            </div>
+        <div>
+          <label className="block text-text-muted mb-2">
+            Target Weight (lbs)
+            <span className="text-primary ml-1">*</span>
+          </label>
+          <div className="flex items-center">
+            <input
+              type="number"
+              name="targetWeightLbs"
+              value={formData.targetWeightLbs}
+              onChange={handleInputChange}
+              className={`w-full p-2 rounded-md bg-background border ${
+                showValidationErrors && !formData.targetWeightLbs
+                  ? 'border-red-500'
+                  : 'border-gray-700'
+              } text-text`}
+              placeholder="Enter target weight"
+              required
+            />
+            <span className="ml-2 text-text-muted">lbs</span>
+          </div>
+          {showValidationErrors && !formData.targetWeightLbs && (
+            <p className="mt-1 text-sm text-red-500">Target weight is required</p>
+          )}
+        </div>
 
-            <div>
-              <label className="block text-text-muted mb-2">
-                Weekly Goal
-                <span className="text-primary ml-1">*</span>
-              </label>
-              <select
-                name="weeklyGoal"
-                value={formData.weeklyGoal}
-                onChange={handleInputChange}
-                className={`w-full p-2 rounded-md bg-background border ${
-                  showValidationErrors && !formData.weeklyGoal
-                    ? 'border-red-500'
-                    : 'border-gray-700'
-                } text-text`}
-                required={isWeightFieldsRequired}
-              >
-                <option value="">Select weekly goal</option>
-                <option value="0.5">0.5 lbs per week</option>
-                <option value="1">1 lb per week</option>
-                <option value="1.5">1.5 lbs per week</option>
-                <option value="2">2 lbs per week</option>
-              </select>
-              {showValidationErrors && !formData.weeklyGoal && (
-                <p className="mt-1 text-sm text-red-500">Weekly goal is required</p>
-              )}
-            </div>
-          </>
-        )}
+        <div>
+          <label className="block text-text-muted mb-2">
+            Weekly Goal
+            <span className="text-primary ml-1">*</span>
+          </label>
+          <select
+            name="weeklyGoal"
+            value={formData.weeklyGoal}
+            onChange={handleInputChange}
+            className={`w-full p-2 rounded-md bg-background border ${
+              showValidationErrors && !formData.weeklyGoal
+                ? 'border-red-500'
+                : 'border-gray-700'
+            } text-text`}
+            required
+          >
+            <option value="">Select weekly goal</option>
+            <option value="0">Maintain current weight</option>
+            <option value="0.5">0.5 lbs per week</option>
+            <option value="1">1 lb per week</option>
+            <option value="1.5">1.5 lbs per week</option>
+            <option value="2">2 lbs per week</option>
+          </select>
+          {showValidationErrors && !formData.weeklyGoal && (
+            <p className="mt-1 text-sm text-red-500">Weekly goal is required</p>
+          )}
+        </div>
 
         {showValidationErrors && (
           <p className="text-red-500 text-sm">
