@@ -18,6 +18,10 @@ module.exports = {
           DEFAULT: '#f3f4f6', // Gray 100
           muted: '#9ca3af',   // Gray 400
         }
+      },
+      padding: {
+        'safe': 'env(safe-area-inset-bottom, 0px)',
+        'safe-top': 'env(safe-area-inset-top, 0px)'
       }
     },
   },
