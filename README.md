@@ -44,4 +44,5 @@ MealMaster is an intuitive meal planning application that helps users plan their
 ## 📱 Screenshots
 
 ![MealMaster Weekly Meal Planning](./assets/meal-plan-interface.png)
+
 *Modern iOS-style meal planning dashboard*
